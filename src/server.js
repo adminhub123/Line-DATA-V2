@@ -19,6 +19,8 @@ const statsRoutes = require('./routes/statsRoutes');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Global Middleware
 app.use(cors());
 app.use(express.json());
@@ -68,6 +70,6 @@ createTestUser();
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
 });
