@@ -16,7 +16,6 @@ const friendRoutes = require('./routes/friendRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const registerRoutes = require('./routes/registerRoutes');
 const statsRoutes = require('./routes/statsRoutes');
-const requestLogger = require('./middleware/requestLogger');
 
 const app = express();
 
@@ -33,31 +32,17 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-app.use(requestLogger);
-
 // Basic route
 app.get('/', (req, res) => {
   res.json({ message: 'Line API is running' });
 });
 
 // Apply rate limiters to routes
-app.use('/api/Auth', authLimiter, authRoutes);  // เปลี่ยน Auth เป็น auth
-app.use('/auth', authLimiter, authRoutes);      // เพิ่ม route แบบไม่มี /api prefix
-
-// routes อื่นๆ ควรมีทั้งแบบมีและไม่มี /api prefix
-app.use('/api/messages', apiLimiter, messageRoutes);
+app.use('/api/Auth', authLimiter, authRoutes);
 app.use('/messages', apiLimiter, messageRoutes);
-
-app.use('/api/friends', apiLimiter, friendRoutes);
 app.use('/friends', apiLimiter, friendRoutes);
-
-app.use('/api/contacts', apiLimiter, contactRoutes);
 app.use('/contacts', apiLimiter, contactRoutes);
-
-app.use('/api/register', apiLimiter, registerRoutes);
 app.use('/register', apiLimiter, registerRoutes);
-
-app.use('/api/stats', apiLimiter, statsRoutes);
 app.use('/stats', apiLimiter, statsRoutes);
 
 // Error handler (ต้องอยู่หลัง routes ทั้งหมด)
