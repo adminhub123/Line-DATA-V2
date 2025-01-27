@@ -11,7 +11,13 @@ exports.login = async (req, res) => {
     if (!user) {
       logger.warn(`Login attempt failed: User not found - ${username}`);
       return res.status(401).json({ 
-        message: 'Authentication failed: User not found' 
+        message: 'Authentication failed: User not found',
+        username: '',
+        role: '',
+        team: '',
+        token: '',
+        expiration: null,
+        name: ''
       });
     }
 
@@ -20,7 +26,13 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       logger.warn(`Login attempt failed: Invalid password - ${username}`);
       return res.status(401).json({ 
-        message: 'Authentication failed: Invalid password' 
+        message: 'Authentication failed: Invalid password',
+        username: '',
+        role: '',
+        team: '',
+        token: '',
+        expiration: null,
+        name: ''
       });
     }
 
@@ -41,9 +53,10 @@ exports.login = async (req, res) => {
 
     logger.info(`User logged in successfully: ${username}`);
 
-    // Send response
+    // Send response ตรงตามที่โปรแกรมต้องการ
     res.json({
       username: user.username,
+      name: user.username, // เพิ่ม name field
       role: user.role,
       team: user.team,
       token: token,
@@ -57,7 +70,13 @@ exports.login = async (req, res) => {
       stack: error.stack
     });
     res.status(500).json({ 
-      message: 'Internal server error' 
+      message: 'Internal server error',
+      username: '',
+      role: '',
+      team: '',
+      token: '',
+      expiration: null,
+      name: ''
     });
   }
 };
