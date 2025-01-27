@@ -88,20 +88,30 @@ exports.loginProgram = async (req, res) => {
     // Find user
     const user = await User.findOne({ username });
     if (!user) {
-      logger.warn(`Program login attempt failed: User not found - ${username}`);
       return res.status(401).json({ 
-        status: false,
-        message: 'Authentication failed: User not found'
+        username: '',
+        name: '',
+        role: '',
+        team: '',
+        token: '',
+        expiration: null,
+        message: 'Invalid username, password, or hwid',
+        brandid: null
       });
     }
 
     // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      logger.warn(`Program login attempt failed: Invalid password - ${username}`);
       return res.status(401).json({ 
-        status: false,
-        message: 'Authentication failed: Invalid password'
+        username: '',
+        name: '',
+        role: '',
+        team: '',
+        token: '',
+        expiration: null,
+        message: 'Invalid username, password, or hwid',
+        brandid: null
       });
     }
 
@@ -124,16 +134,15 @@ exports.loginProgram = async (req, res) => {
 
     // ส่ง response ในรูปแบบที่โปรแกรมต้องการ
     res.json({
-      status: true,
-      message: "Login Success",
-      data: {
-        username: user.username,
-        name: user.username,
-        role: user.role,
-        team: user.team,
-        token: token,
-        expiration: expiration
-      }
+      id: user._id,
+      username: user.username,
+      name: user.username,
+      role: user.role,
+      team: user.team,
+      token: token,
+      expiration: expiration,
+      message: 'Login successful',
+      brandid: 1
     });
 
   } catch (error) {
@@ -142,8 +151,14 @@ exports.loginProgram = async (req, res) => {
       stack: error.stack
     });
     res.status(500).json({ 
-      status: false,
-      message: 'An error occurred during login please try again'
+      username: '',
+      name: '',
+      role: '',
+      team: '',
+      token: '',
+      expiration: null,
+      message: 'An error occurred during login please try again',
+      brandid: null
     });
   }
 };
