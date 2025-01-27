@@ -76,6 +76,8 @@ exports.login = async (req, res) => {
 
 // Login สำหรับ program
 exports.loginProgram = async (req, res) => {
+  console.log('Request Body:', req.body);
+  console.log('Request Headers:', req.headers);
   try {
     // Log incoming request
     logger.info('Login Program Request:', {
