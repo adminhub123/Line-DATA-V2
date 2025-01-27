@@ -38,11 +38,23 @@ app.get('/', (req, res) => {
 });
 
 // Apply rate limiters to routes
-app.use('/api/Auth', authLimiter, authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);  // เปลี่ยน Auth เป็น auth
+app.use('/auth', authLimiter, authRoutes);      // เพิ่ม route แบบไม่มี /api prefix
+
+// routes อื่นๆ ควรมีทั้งแบบมีและไม่มี /api prefix
+app.use('/api/messages', apiLimiter, messageRoutes);
 app.use('/messages', apiLimiter, messageRoutes);
+
+app.use('/api/friends', apiLimiter, friendRoutes);
 app.use('/friends', apiLimiter, friendRoutes);
+
+app.use('/api/contacts', apiLimiter, contactRoutes);
 app.use('/contacts', apiLimiter, contactRoutes);
+
+app.use('/api/register', apiLimiter, registerRoutes);
 app.use('/register', apiLimiter, registerRoutes);
+
+app.use('/api/stats', apiLimiter, statsRoutes);
 app.use('/stats', apiLimiter, statsRoutes);
 
 // Error handler (ต้องอยู่หลัง routes ทั้งหมด)
