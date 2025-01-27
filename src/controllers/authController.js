@@ -77,6 +77,15 @@ exports.login = async (req, res) => {
 // Login สำหรับ program
 exports.loginProgram = async (req, res) => {
   try {
+    // Log incoming request
+    logger.info('Login Program Request:', {
+      headers: req.headers,
+      body: req.body,
+      query: req.query,
+      method: req.method,
+      path: req.path
+    });
+
     const { username, password } = req.body;
 
     // Find user
@@ -142,9 +151,11 @@ exports.loginProgram = async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('Program login error', {
+    logger.error('Login Program Error:', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
+      headers: req.headers,
+      body: req.body
     });
     res.status(500).json({ 
       username: '',

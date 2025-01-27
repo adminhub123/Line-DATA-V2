@@ -16,6 +16,7 @@ const friendRoutes = require('./routes/friendRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const registerRoutes = require('./routes/registerRoutes');
 const statsRoutes = require('./routes/statsRoutes');
+const requestLogger = require('./middleware/requestLogger');
 
 const app = express();
 
@@ -31,6 +32,8 @@ app.use(securityHeaders); // เพิ่ม security headers middleware
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
+
+app.use(requestLogger);
 
 // Basic route
 app.get('/', (req, res) => {
