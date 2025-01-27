@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const { validateLogin } = require('../middleware/validator');
 
-// เพิ่ม route นี้
-router.post('/login/program', authController.loginProgram);
+// Route สำหรับ web login
+router.post('/login', validateLogin, authController.login);
 
-// routes อื่นๆ
-router.post('/login', authController.login);
+// Route สำหรับ program login
+router.post('/login/program', validateLogin, authController.loginProgram);
 
 module.exports = router;

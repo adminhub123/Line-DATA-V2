@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const logger = require('../utils/logger'); // เพิ่มบรรทัดนี้
+const logger = require('../utils/logger');
 
+// Login สำหรับ web
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Find user
     const user = await User.findOne({ username });
     if (!user) {
       logger.warn(`Login attempt failed: User not found - ${username}`);
@@ -21,7 +21,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       logger.warn(`Login attempt failed: Invalid password - ${username}`);
@@ -36,27 +35,21 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRATION }
     );
 
-    // Calculate expiration
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 24);
 
-    // Update last login
     user.lastLogin = new Date();
     await user.save();
 
-    logger.info(`User logged in successfully: ${username}`);
-
-    // Send response ตรงตามที่โปรแกรมต้องการ
     res.json({
       username: user.username,
-      name: user.username, // เพิ่ม name field
+      name: user.username,
       role: user.role,
       team: user.team,
       token: token,
@@ -81,6 +74,7 @@ exports.login = async (req, res) => {
   }
 };
 
+// Login สำหรับ program
 exports.loginProgram = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -88,6 +82,7 @@ exports.loginProgram = async (req, res) => {
     // Find user
     const user = await User.findOne({ username });
     if (!user) {
+      logger.warn(`Program login attempt failed: User not found - ${username}`);
       return res.status(401).json({ 
         username: '',
         name: '',
@@ -103,6 +98,7 @@ exports.loginProgram = async (req, res) => {
     // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      logger.warn(`Program login attempt failed: Invalid password - ${username}`);
       return res.status(401).json({ 
         username: '',
         name: '',
