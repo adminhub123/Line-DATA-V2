@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
 });
 
 // Apply rate limiters to routes
-app.use('/api/auth', authLimiter, authRoutes);  // เปลี่ยน Auth เป็น auth
+app.use('/api/Auth', authLimiter, authRoutes);  // เปลี่ยน Auth เป็น auth
 app.use('/auth', authLimiter, authRoutes);      // เพิ่ม route แบบไม่มี /api prefix
 
 // routes อื่นๆ ควรมีทั้งแบบมีและไม่มี /api prefix
