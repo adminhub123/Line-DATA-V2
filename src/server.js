@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 });
 
 // Apply rate limiters to routes
-app.use('/auth', authLimiter, authRoutes);
+app.use('/api/Auth', authLimiter, authRoutes);
 app.use('/messages', apiLimiter, messageRoutes);
 app.use('/friends', apiLimiter, friendRoutes);
 app.use('/contacts', apiLimiter, contactRoutes);
