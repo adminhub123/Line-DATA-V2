@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
-// เพิ่มฟังก์ชั่นนี้ที่ต้น file
 const validateLoginInput = (username, password) => {  
  if (!username || !password) {
    return 'Username and password are required';
@@ -15,10 +14,22 @@ const validateLoginInput = (username, password) => {
 
 exports.login = async (req, res) => {
  try {
-   const { username, password } = req.body;
+   logger.info('Standard login request:', {
+     body: req.body,
+     headers: req.headers,
+     ip: req.ip
+   });
+
+   // รองรับทั้ง username และ userName
+   const username = req.body.username || req.body.userName;
+   const { password } = req.body;
    
    const validationError = validateLoginInput(username, password);
    if (validationError) {
+     logger.warn('Login validation failed:', {
+       error: validationError,
+       username
+     });
      return res.status(400).json({
        message: validationError,
        username: '',
@@ -33,7 +44,7 @@ exports.login = async (req, res) => {
    // Find user
    const user = await User.findOne({ username });
    if (!user) {
-     logger.warn(`Login attempt failed: User not found - ${username}`);
+     logger.warn('Login failed - user not found:', { username });
      return res.status(401).json({ 
        message: 'Authentication failed: User not found',
        username: '',
@@ -48,7 +59,7 @@ exports.login = async (req, res) => {
    // Check password
    const isMatch = await user.comparePassword(password);
    if (!isMatch) {
-     logger.warn(`Login attempt failed: Invalid password - ${username}`);
+     logger.warn('Login failed - invalid password:', { username });
      return res.status(401).json({ 
        message: 'Authentication failed: Invalid password',
        username: '',
@@ -75,7 +86,11 @@ exports.login = async (req, res) => {
    user.lastLogin = new Date();
    await user.save();
 
-   logger.info(`User logged in successfully: ${username}`);
+   logger.info('Login successful:', {
+     username,
+     role: user.role,
+     team: user.team
+   });
 
    res.json({
      username: user.username,
@@ -88,7 +103,7 @@ exports.login = async (req, res) => {
    });
 
  } catch (error) {
-   logger.error('Login error', {
+   logger.error('Login error:', {
      error: error.message,
      stack: error.stack
    });
@@ -105,91 +120,120 @@ exports.login = async (req, res) => {
 };
 
 exports.loginProgram = async (req, res) => {
-  try {
-    const { username, password, hwid } = req.body;
-    
-    // Log request
-    logger.info('Program login attempt', {
-      username,
-      hwid,
-      requestId: req.headers['request-id'] // เพิ่มการ log requestId
-    });
+ try {
+   logger.info('Program login request:', {
+     body: req.body,
+     headers: req.headers,
+     ip: req.ip
+   });
 
-    // Validate input
-    if (!username || !password) {
-      return res.status(401).json({
-        status: false,
-        message: 'Invalid username, password, or hwid'
-      });
-    }
+   // รองรับทั้ง username และ userName
+   const username = req.body.username || req.body.userName;
+   const { password, hwid } = req.body;
 
-    // Find user
-    const user = await User.findOne({ username });
-    if (!user) {
-      logger.warn(`Program login failed - User not found: ${username}`);
-      return res.status(401).json({
-        status: false,
-        message: 'Invalid username, password, or hwid'
-      });
-    }
+   logger.info('Program login fields:', {
+     receivedFields: Object.keys(req.body),
+     username: username,
+     hasPassword: !!password,
+     hwid: hwid || 'not provided',
+     unexpectedFields: Object.keys(req.body).filter(key => 
+       !['username', 'userName', 'password', 'hwid'].includes(key)
+     )
+   });
 
-    // Check password  
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      logger.warn(`Program login failed - Invalid password: ${username}`);
-      return res.status(401).json({
-        status: false,
-        message: 'Invalid username, password, or hwid'
-      });
-    }
+   const validationError = validateLoginInput(username, password);
+   if (validationError) {
+     logger.warn('Program login validation failed:', {
+       error: validationError,
+       username
+     });
+     return res.status(401).json({
+       message: 'Invalid username, password, or hwid',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    // HWID not required for now
-    // if (!hwid) {
-    //   return res.status(401).json({
-    //     status: false,
-    //     message: 'Invalid username, password, or hwid'
-    //   });
-    // }
+   // Find user
+   const user = await User.findOne({ username });
+   if (!user) {
+     logger.warn('Program login failed - user not found:', { username });
+     return res.status(401).json({ 
+       message: 'Invalid username, password, or hwid',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    // Generate token and send response
-    const token = jwt.sign(
-      { 
-        userId: user._id,
-        hwid: hwid // เพิ่ม hwid ใน token
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRATION }
-    );
+   // Check password
+   const isMatch = await user.comparePassword(password);
+   if (!isMatch) {
+     logger.warn('Program login failed - invalid password:', { username });
+     return res.status(401).json({ 
+       message: 'Invalid username, password, or hwid',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 24);
+   // Generate token
+   const token = jwt.sign(
+     { userId: user._id },
+     process.env.JWT_SECRET,
+     { expiresIn: process.env.JWT_EXPIRATION }
+   );
 
-    user.lastLogin = new Date();
-    await user.save();
+   // Calculate expiration
+   const expiration = new Date();
+   expiration.setHours(expiration.getHours() + 24);
 
-    logger.info(`Program login successful: ${username}`);
+   // Update last login
+   user.lastLogin = new Date();
+   await user.save();
 
-    res.json({
-      status: true,
-      message: "Login Success", 
-      data: {
-        username: user.username,
-        name: user.username,
-        role: user.role,
-        team: user.team,
-        token: token,
-        expiration: expiration
-      }
-    });
+   logger.info('Program login successful:', {
+     username,
+     role: user.role,
+     team: user.team,
+     hwid: hwid || 'not provided'
+   });
 
-  } catch (error) {
-    logger.error('Program login error', {
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({
-      status: false,
-      message: 'Invalid username, password, or hwid'
-    });
-  }
+   // ส่ง response เหมือนกับ standard login
+   res.json({
+     username: user.username,
+     name: user.username,
+     role: user.role,
+     team: user.team,
+     token: token,
+     expiration: expiration,
+     message: 'Login successful'
+   });
+
+ } catch (error) {
+   logger.error('Program login error:', {
+     error: error.message,
+     stack: error.stack 
+   });
+   res.status(500).json({ 
+     message: 'Internal server error',
+     username: '',
+     role: '',
+     team: '',
+     token: '',
+     expiration: null,
+     name: ''
+   });
+ }
 };

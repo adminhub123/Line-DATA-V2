@@ -39,11 +39,11 @@ app.get('/', (req, res) => {
 
 // Apply rate limiters to routes
 app.use('/api/Auth', authLimiter, authRoutes);
-app.use('/messages', apiLimiter, messageRoutes);
-app.use('/friends', apiLimiter, friendRoutes);
-app.use('/contacts', apiLimiter, contactRoutes);
-app.use('/register', apiLimiter, registerRoutes);
-app.use('/stats', apiLimiter, statsRoutes);
+app.use('/api/messages', apiLimiter, messageRoutes);
+app.use('/api/friends', apiLimiter, friendRoutes);
+app.use('/api/contacts', apiLimiter, contactRoutes);
+app.use('/api/register', apiLimiter, registerRoutes);
+app.use('/api/stats', apiLimiter, statsRoutes);
 
 // Error handler (ต้องอยู่หลัง routes ทั้งหมด)
 app.use(errorHandler);

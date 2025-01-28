@@ -1,2 +1,6 @@
-{"level":"info","message":"User logged in successfully: test","timestamp":"2025-01-27T04:36:47.009Z"}
-{"level":"info","message":"User logged in successfully: test","timestamp":"2025-01-27T07:58:06.389Z"}
+{"body":{"password":"test123","userName":"test"},"headers":{"content-length":"40","content-type":"application/json; charset=utf-8","host":"localhost:3000"},"ip":"127.0.0.1","level":"info","message":"Program login request:","timestamp":"2025-01-28T02:53:33.368Z"}
+{"hasPassword":true,"hwid":"not provided","level":"info","message":"Program login fields:","receivedFields":["userName","password"],"timestamp":"2025-01-28T02:53:33.370Z","unexpectedFields":[],"username":"test"}
+{"hwid":"not provided","level":"info","message":"Program login successful:","role":"admin","team":"admin","timestamp":"2025-01-28T02:53:33.517Z","username":"test"}
+{"body":{"password":"test123","userName":"test"},"headers":{"content-length":"40","content-type":"application/json; charset=utf-8","host":"localhost:3000"},"ip":"127.0.0.1","level":"info","message":"Program login request:","timestamp":"2025-01-28T03:10:33.150Z"}
+{"hasPassword":true,"hwid":"not provided","level":"info","message":"Program login fields:","receivedFields":["userName","password"],"timestamp":"2025-01-28T03:10:33.152Z","unexpectedFields":[],"username":"test"}
+{"hwid":"not provided","level":"info","message":"Program login successful:","role":"admin","team":"admin","timestamp":"2025-01-28T03:10:33.307Z","username":"test"}
