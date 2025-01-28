@@ -21,21 +21,28 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: 'user'
   },
+  isWebAdmin: {
+    type: Boolean,
+    default: false
+  },
   lastLogin: {
     type: Date
+  },
+  expiration: {  // เพิ่มฟิลด์นี้
+    type: Date,
+    required: true
   }
 }, {
   timestamps: true
 });
 
-// Hash password before saving
+// ไม่ต้องแก้ไขส่วนนี้
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

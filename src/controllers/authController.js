@@ -12,21 +12,21 @@ const validateLoginInput = (username, password) => {
  return null;
 };
 
+// Login สำหรับเว็บ
 exports.login = async (req, res) => {
  try {
-   logger.info('Standard login request:', {
+   logger.info('Web login request:', {
      body: req.body,
      headers: req.headers,
      ip: req.ip
    });
 
-   // รองรับทั้ง username และ userName
    const username = req.body.username || req.body.userName;
    const { password } = req.body;
    
    const validationError = validateLoginInput(username, password);
    if (validationError) {
-     logger.warn('Login validation failed:', {
+     logger.warn('Web login validation failed:', {
        error: validationError,
        username
      });
@@ -41,10 +41,10 @@ exports.login = async (req, res) => {
      });
    }
 
-   // Find user
-   const user = await User.findOne({ username });
+   // Find user with isWebAdmin true
+   const user = await User.findOne({ username, isWebAdmin: true });
    if (!user) {
-     logger.warn('Login failed - user not found:', { username });
+     logger.warn('Web login failed - user not found:', { username });
      return res.status(401).json({ 
        message: 'Authentication failed: User not found',
        username: '',
@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
    // Check password
    const isMatch = await user.comparePassword(password);
    if (!isMatch) {
-     logger.warn('Login failed - invalid password:', { username });
+     logger.warn('Web login failed - invalid password:', { username });
      return res.status(401).json({ 
        message: 'Authentication failed: Invalid password',
        username: '',
@@ -71,25 +71,27 @@ exports.login = async (req, res) => {
      });
    }
 
-   // Generate token
+   // ใช้เวลาที่เหลือจนถึงวันหมดอายุจริง
    const token = jwt.sign(
      { userId: user._id },
      process.env.JWT_SECRET,
-     { expiresIn: process.env.JWT_EXPIRATION }
+     { 
+       expiresIn: Math.floor((user.expiration - new Date()) / 1000)
+     }
    );
 
-   // Calculate expiration
-   const expiration = new Date();
-   expiration.setHours(expiration.getHours() + 24);
+   // ใช้ expiration จากฐานข้อมูล
+   const expiration = user.expiration;
 
    // Update last login
    user.lastLogin = new Date();
    await user.save();
 
-   logger.info('Login successful:', {
+   logger.info('Web login successful:', {
      username,
      role: user.role,
-     team: user.team
+     team: user.team,
+     expiration: expiration
    });
 
    res.json({
@@ -103,7 +105,7 @@ exports.login = async (req, res) => {
    });
 
  } catch (error) {
-   logger.error('Login error:', {
+   logger.error('Web login error:', {
      error: error.message,
      stack: error.stack
    });
@@ -119,6 +121,7 @@ exports.login = async (req, res) => {
  }
 };
 
+// Login สำหรับโปรแกรม
 exports.loginProgram = async (req, res) => {
  try {
    logger.info('Program login request:', {
@@ -127,7 +130,6 @@ exports.loginProgram = async (req, res) => {
      ip: req.ip
    });
 
-   // รองรับทั้ง username และ userName
    const username = req.body.username || req.body.userName;
    const { password, hwid } = req.body;
 
@@ -158,7 +160,6 @@ exports.loginProgram = async (req, res) => {
      });
    }
 
-   // Find user
    const user = await User.findOne({ username });
    if (!user) {
      logger.warn('Program login failed - user not found:', { username });
@@ -173,7 +174,6 @@ exports.loginProgram = async (req, res) => {
      });
    }
 
-   // Check password
    const isMatch = await user.comparePassword(password);
    if (!isMatch) {
      logger.warn('Program login failed - invalid password:', { username });
@@ -188,16 +188,17 @@ exports.loginProgram = async (req, res) => {
      });
    }
 
-   // Generate token
+   // ใช้เวลาที่เหลือจนถึงวันหมดอายุจริง
    const token = jwt.sign(
      { userId: user._id },
      process.env.JWT_SECRET,
-     { expiresIn: process.env.JWT_EXPIRATION }
+     { 
+       expiresIn: Math.floor((user.expiration - new Date()) / 1000)
+     }
    );
 
-   // Calculate expiration
-   const expiration = new Date();
-   expiration.setHours(expiration.getHours() + 24);
+   // ใช้ expiration จากฐานข้อมูล
+   const expiration = user.expiration;
 
    // Update last login
    user.lastLogin = new Date();
@@ -207,10 +208,10 @@ exports.loginProgram = async (req, res) => {
      username,
      role: user.role,
      team: user.team,
-     hwid: hwid || 'not provided'
+     hwid: hwid || 'not provided',
+     expiration: expiration
    });
 
-   // ส่ง response เหมือนกับ standard login
    res.json({
      username: user.username,
      name: user.username,
