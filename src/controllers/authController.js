@@ -105,75 +105,91 @@ exports.login = async (req, res) => {
 };
 
 exports.loginProgram = async (req, res) => {
- try {
-   const { username, password, hwid } = req.body;
+  try {
+    const { username, password, hwid } = req.body;
+    
+    // Log request
+    logger.info('Program login attempt', {
+      username,
+      hwid,
+      requestId: req.headers['request-id'] // เพิ่มการ log requestId
+    });
 
-   const validationError = validateLoginInput(username, password);
-   if (validationError) {
-     return res.status(401).json({
-       status: false,
-       message: 'Invalid username, password, or hwid'
-     });
-   }
+    // Validate input
+    if (!username || !password) {
+      return res.status(401).json({
+        status: false,
+        message: 'Invalid username, password, or hwid'
+      });
+    }
 
-   // Find user
-   const user = await User.findOne({ username });
-   if (!user) {
-     logger.warn(`Program login attempt failed: User not found - ${username}`);
-     return res.status(401).json({ 
-       status: false,
-       message: 'Invalid username, password, or hwid'
-     });
-   }
+    // Find user
+    const user = await User.findOne({ username });
+    if (!user) {
+      logger.warn(`Program login failed - User not found: ${username}`);
+      return res.status(401).json({
+        status: false,
+        message: 'Invalid username, password, or hwid'
+      });
+    }
 
-   // Check password
-   const isMatch = await user.comparePassword(password);
-   if (!isMatch) {
-     logger.warn(`Program login attempt failed: Invalid password - ${username}`);
-     return res.status(401).json({ 
-       status: false,
-       message: 'Invalid username, password, or hwid'
-     });
-   }
+    // Check password  
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      logger.warn(`Program login failed - Invalid password: ${username}`);
+      return res.status(401).json({
+        status: false,
+        message: 'Invalid username, password, or hwid'
+      });
+    }
 
-   // Generate token
-   const token = jwt.sign(
-     { userId: user._id },
-     process.env.JWT_SECRET,
-     { expiresIn: process.env.JWT_EXPIRATION }
-   );
+    // HWID not required for now
+    // if (!hwid) {
+    //   return res.status(401).json({
+    //     status: false,
+    //     message: 'Invalid username, password, or hwid'
+    //   });
+    // }
 
-   // Calculate expiration
-   const expiration = new Date();
-   expiration.setHours(expiration.getHours() + 24);
+    // Generate token and send response
+    const token = jwt.sign(
+      { 
+        userId: user._id,
+        hwid: hwid // เพิ่ม hwid ใน token
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRATION }
+    );
 
-   // Update last login
-   user.lastLogin = new Date();
-   await user.save();
+    const expiration = new Date();
+    expiration.setHours(expiration.getHours() + 24);
 
-   logger.info(`Program login successful: ${username}`);
+    user.lastLogin = new Date();
+    await user.save();
 
-   res.json({
-     status: true,
-     message: "Login Success",
-     data: {
-       username: user.username,
-       name: user.username,
-       role: user.role,
-       team: user.team,
-       token: token,
-       expiration: expiration
-     }
-   });
+    logger.info(`Program login successful: ${username}`);
 
- } catch (error) {
-   logger.error('Program login error', {
-     error: error.message,
-     stack: error.stack 
-   });
-   res.status(500).json({ 
-     status: false,
-     message: 'Invalid username, password, or hwid'
-   });
- }
+    res.json({
+      status: true,
+      message: "Login Success", 
+      data: {
+        username: user.username,
+        name: user.username,
+        role: user.role,
+        team: user.team,
+        token: token,
+        expiration: expiration
+      }
+    });
+
+  } catch (error) {
+    logger.error('Program login error', {
+      error: error.message,
+      stack: error.stack
+    });
+    res.status(500).json({
+      status: false,
+      message: 'Invalid username, password, or hwid'
+    });
+  }
 };
