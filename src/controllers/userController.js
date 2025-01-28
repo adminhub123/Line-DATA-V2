@@ -1,9 +1,67 @@
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
+exports.createUser = async (req, res) => {
+  try {
+    const { username, password, role, team, isWebAdmin, expiration } = req.body;
+
+    logger.info('Create user request:', {
+      username,
+      role,
+      team,
+      expiration,
+      isWebAdmin
+    });
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      logger.warn('Username already exists:', { username });
+      return res.status(400).json({ 
+        status: 'error',
+        message: 'Username already exists'
+      });
+    }
+
+    const user = new User({
+      username,
+      password,
+      role,
+      team,
+      isWebAdmin: isWebAdmin || false,
+      expiration: expiration ? new Date(expiration) : new Date(Date.now() + (1000 * 24 * 60 * 60 * 1000)),
+      lastLogin: null
+    });
+
+    await user.save();
+
+    logger.info('User created successfully:', {
+      username,
+      role,
+      team
+    });
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(201).json({
+      status: 'success',
+      data: userResponse
+    });
+  } catch (error) {
+    logger.error('Create user error:', {
+      error: error.message,
+      stack: error.stack
+    });
+    res.status(500).json({
+      status: 'error',
+      message: error.message || 'Error creating user'
+    });
+  }
+};
+
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0 }); // ไม่ส่ง password กลับไป
+    const users = await User.find({}, { password: 0 });
     res.json(users);
   } catch (error) {
     logger.error('Get users error:', {
@@ -14,86 +72,62 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-exports.createUser = async (req, res) => {
-  try {
-    const { username, password, role, team } = req.body;
-
-    // ตรวจสอบว่ามี user นี้อยู่แล้วหรือไม่
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Username already exists' });
-    }
-
-    // สร้าง user ใหม่
-    const user = new User({
-      username,
-      password, // จะถูก hash ใน model
-      role,
-      team,
-      lastLogin: null
-    });
-
-    await user.save();
-    
-    logger.info('User created:', {
-      username,
-      role,
-      team
-    });
-
-    // ส่งข้อมูลกลับโดยไม่มี password
-    const userResponse = user.toObject();
-    delete userResponse.password;
-    
-    res.status(201).json(userResponse);
-  } catch (error) {
-    logger.error('Create user error:', {
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({ message: 'Error creating user' });
-  }
-};
-
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, role, team } = req.body;
+    const { username, role, team, isWebAdmin, expiration } = req.body;
 
-    // ตรวจสอบว่ามี user อื่นที่ใช้ username นี้หรือไม่
-    const existingUser = await User.findOne({ 
-      username, 
-      _id: { $ne: id } 
-    });
-    
-    if (existingUser) {
-      return res.status(400).json({ message: 'Username already exists' });
-    }
-
-    const user = await User.findByIdAndUpdate(
+    logger.info('Update user request:', {
       id,
-      { username, role, team },
-      { new: true, select: '-password' }
-    );
+      username,
+      role,
+      team,
+      expiration,
+      isWebAdmin
+    });
 
+    const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      logger.warn('User not found:', { id });
+      return res.status(404).json({ 
+        status: 'error',
+        message: 'User not found' 
+      });
     }
 
-    logger.info('User updated:', {
+    user.username = username;
+    user.role = role;
+    user.team = team;
+    user.isWebAdmin = isWebAdmin;
+    if (expiration) {
+      user.expiration = new Date(expiration);
+    }
+
+    await user.save();
+
+    logger.info('User updated successfully:', {
       id,
       username,
       role,
       team
     });
 
-    res.json(user);
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.json({
+      status: 'success',
+      data: userResponse
+    });
   } catch (error) {
     logger.error('Update user error:', {
       error: error.message,
       stack: error.stack
     });
-    res.status(500).json({ message: 'Error updating user' });
+    res.status(500).json({
+      status: 'error',
+      message: error.message || 'Error updating user'
+    });
   }
 };
 
@@ -101,29 +135,33 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
+    logger.info('Delete user request:', { id });
+
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // ไม่ให้ลบ user ที่กำลัง login อยู่
-    if (user._id.toString() === req.userId) {
-      return res.status(400).json({ message: 'Cannot delete your own account' });
+      logger.warn('User not found:', { id });
+      return res.status(404).json({ 
+        status: 'error',
+        message: 'User not found' 
+      });
     }
 
     await User.deleteOne({ _id: id });
 
-    logger.info('User deleted:', {
-      id,
-      username: user.username
-    });
+    logger.info('User deleted successfully:', { id });
 
-    res.json({ message: 'User deleted successfully' });
+    res.json({ 
+      status: 'success',
+      message: 'User deleted successfully' 
+    });
   } catch (error) {
     logger.error('Delete user error:', {
       error: error.message,
       stack: error.stack
     });
-    res.status(500).json({ message: 'Error deleting user' });
+    res.status(500).json({
+      status: 'error',
+      message: error.message || 'Error deleting user'
+    });
   }
 };

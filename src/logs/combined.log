@@ -1,11 +1,4 @@
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T17:29:16.466Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T17:29:21.934Z"}
-{"body":{"password":"admin123","username":"admin"},"headers":{"accept":"*/*","accept-encoding":"gzip, deflate, br","connection":"keep-alive","content-length":"54","content-type":"application/json","host":"localhost:3000","postman-token":"bf3095e1-b20e-412e-b353-585fff8d04e2","user-agent":"PostmanRuntime/7.43.0"},"ip":"127.0.0.1","level":"info","message":"Web login request:","timestamp":"2025-01-28T18:01:15.240Z"}
-{"expiration":"2027-10-25T13:15:01.673Z","level":"info","message":"Web login successful:","role":"admin","team":"admin","timestamp":"2025-01-28T18:01:15.394Z","username":"admin"}
-{"body":{"password":"admin123","username":"admin"},"headers":{"accept":"*/*","accept-encoding":"gzip, deflate, br","connection":"keep-alive","content-length":"54","content-type":"application/json","host":"localhost:3000","postman-token":"be45c3aa-ab11-4489-8bbc-a2ba67b7f09c","user-agent":"PostmanRuntime/7.43.0"},"ip":"127.0.0.1","level":"info","message":"Web login request:","timestamp":"2025-01-28T18:03:56.742Z"}
-{"expiration":"2027-10-25T13:15:01.673Z","level":"info","message":"Web login successful:","role":"admin","team":"admin","timestamp":"2025-01-28T18:03:56.873Z","username":"admin"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T18:15:05.520Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T18:15:10.975Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T18:27:51.625Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T18:27:57.114Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T18:35:30.395Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T19:14:29.042Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T19:14:34.548Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T19:15:15.584Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T19:15:20.992Z"}
