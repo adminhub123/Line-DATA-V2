@@ -6,3 +6,6 @@
 {"expiration":"2027-10-25T13:15:01.673Z","level":"info","message":"Web login successful:","role":"admin","team":"admin","timestamp":"2025-01-28T18:03:56.873Z","username":"admin"}
 {"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T18:15:05.520Z"}
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T18:15:10.975Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T18:27:51.625Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-28T18:27:57.114Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-28T18:35:30.395Z"}
