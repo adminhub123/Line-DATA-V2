@@ -21,6 +21,8 @@ const registerRoutes = require('./routes/registerRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const fileDataRoutes = require('./routes/fileDataRoutes');
+const collectionRoutes = require('./routes/collectionRoutes');
 
 const app = express();
 
@@ -62,6 +64,10 @@ if (!fs.existsSync(uploadsDir)){
 
 // Base path for API
 const basePath = '/api';
+
+// Add to routes
+app.use('/api', fileDataRoutes);
+app.use('/api', collectionRoutes);
 
 // Routes with base path
 app.use(`${basePath}/auth`, authLimiter, authRoutes);
