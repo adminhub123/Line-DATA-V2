@@ -1,16 +1,9 @@
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:48:25.869Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:48:31.631Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:48:42.610Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:48:48.087Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:49:09.999Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:49:15.433Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:49:32.347Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:49:37.885Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:49:45.103Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:49:50.908Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:50:05.990Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:50:11.403Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:50:38.537Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:50:44.363Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T13:51:00.982Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T13:51:06.406Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:10:04.960Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:10:10.371Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:10:21.515Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:10:23.424Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:10:28.846Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:13:02.643Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:13:08.113Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:14:19.628Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:14:25.105Z"}
