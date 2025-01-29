@@ -1,159 +1,241 @@
+//src/controllers/authController.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
+const validateLoginInput = (username, password) => {  
+ if (!username || !password) {
+   return 'Username and password are required';
+ }
+ if (typeof username !== 'string' || typeof password !== 'string') {
+   return 'Invalid username or password format'; 
+ }
+ return null;
+};
+
+// Login สำหรับเว็บ
 exports.login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
+ try {
+   logger.info('Web login request:', {
+     body: req.body,
+     headers: req.headers,
+     ip: req.ip
+   });
 
-    logger.info('Login attempt:', { username });
+   const username = req.body.username || req.body.userName;
+   const { password } = req.body;
+   
+   const validationError = validateLoginInput(username, password);
+   if (validationError) {
+     logger.warn('Web login validation failed:', {
+       error: validationError,
+       username
+     });
+     return res.status(400).json({
+       message: validationError,
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    // Find user
-    const user = await User.findOne({ username });
-    if (!user) {
-      logger.warn('Login failed - user not found:', { username });
-      return res.status(401).json({
-        code: 401,
-        message: 'Authentication failed: User not found',
-        data: {}
-      });
-    }
+   // Find user with isWebAdmin true
+   const user = await User.findOne({ username, isWebAdmin: true });
+   if (!user) {
+     logger.warn('Web login failed - user not found:', { username });
+     return res.status(401).json({ 
+       message: 'Authentication failed: User not found',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      logger.warn('Login failed - invalid password:', { username });
-      return res.status(401).json({
-        code: 401,
-        message: 'Authentication failed: Invalid password',
-        data: {}
-      });
-    }
+   // Check password
+   const isMatch = await user.comparePassword(password);
+   if (!isMatch) {
+     logger.warn('Web login failed - invalid password:', { username });
+     return res.status(401).json({ 
+       message: 'Authentication failed: Invalid password',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    // Generate token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+   // ใช้เวลาที่เหลือจนถึงวันหมดอายุจริง
+   const token = jwt.sign(
+     { userId: user._id },
+     process.env.JWT_SECRET,
+     { 
+       expiresIn: Math.floor((user.expiration - new Date()) / 1000)
+     }
+   );
 
-    console.log('Generated token:', token); // Debug log
+   // ใช้ expiration จากฐานข้อมูล
+   const expiration = user.expiration;
 
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
+   // Update last login
+   user.lastLogin = new Date();
+   await user.save();
 
-    logger.info('Login successful:', { username, role: user.role });
+   logger.info('Web login successful:', {
+     username,
+     role: user.role,
+     team: user.team,
+     expiration: expiration
+   });
 
-    res.json({
-      code: 200,
-      message: "",
-      data: {
-        token,
-        user: {
-          username: user.username,
-          role: user.role,
-          team: user.team,
-          expiration: user.expiration
-        }
-      }
-    });
+   res.json({
+     username: user.username,
+     name: user.username,
+     role: user.role,
+     team: user.team,
+     token: token,
+     expiration: expiration,
+     message: 'Login successful'
+   });
 
-  } catch (error) {
-    logger.error('Login error:', {
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({
-      code: 500,
-      message: 'Internal server error',
-      data: {}
-    });
-  }
+ } catch (error) {
+   logger.error('Web login error:', {
+     error: error.message,
+     stack: error.stack
+   });
+   res.status(500).json({ 
+     message: 'Internal server error',
+     username: '',
+     role: '',
+     team: '',
+     token: '',
+     expiration: null,
+     name: ''
+   });
+ }
 };
 
-// Program login (สำหรับโปรแกรม)
+// Login สำหรับโปรแกรม
 exports.loginProgram = async (req, res) => {
-  try {
-    const { username, password } = req.body;
+ try {
+   logger.info('Program login request:', {
+     body: req.body,
+     headers: req.headers,
+     ip: req.ip
+   });
 
-    logger.info('Program login attempt:', { username });
+   const username = req.body.username || req.body.userName;
+   const { password, hwid } = req.body;
 
-    // Generate token for program
-    const token = jwt.sign(
-      { 
-        userId: 'program-user',
-        type: 'program'
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+   logger.info('Program login fields:', {
+     receivedFields: Object.keys(req.body),
+     username: username,
+     hasPassword: !!password,
+     hwid: hwid || 'not provided',
+     unexpectedFields: Object.keys(req.body).filter(key => 
+       !['username', 'userName', 'password', 'hwid'].includes(key)
+     )
+   });
 
-    console.log('Generated program token:', token); // Debug log
+   const validationError = validateLoginInput(username, password);
+   if (validationError) {
+     logger.warn('Program login validation failed:', {
+       error: validationError,
+       username
+     });
+     return res.status(401).json({
+       message: 'Invalid username, password, or hwid',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-    res.json({
-      code: 200,
-      message: "",
-      data: {
-        token,
-        user: {
-          username,
-          role: 'program',
-          team: 'program',
-          expiration: new Date(Date.now() + 24*60*60*1000)
-        }
-      }
-    });
+   const user = await User.findOne({ username });
+   if (!user) {
+     logger.warn('Program login failed - user not found:', { username });
+     return res.status(401).json({ 
+       message: 'Invalid username, password, or hwid',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-  } catch (error) {
-    logger.error('Program login error:', {
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({
-      code: 500,
-      message: 'Internal server error',
-      data: {}
-    });
-  }
-};
+   const isMatch = await user.comparePassword(password);
+   if (!isMatch) {
+     logger.warn('Program login failed - invalid password:', { username });
+     return res.status(401).json({ 
+       message: 'Invalid username, password, or hwid',
+       username: '',
+       role: '',
+       team: '',
+       token: '',
+       expiration: null,
+       name: ''
+     });
+   }
 
-// Admin auth
-exports.adminAuth = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    
-    // Generate admin token
-    const token = jwt.sign(
-      { 
-        userId: 'admin',
-        type: 'admin'
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+   // ใช้เวลาที่เหลือจนถึงวันหมดอายุจริง
+   const token = jwt.sign(
+     { userId: user._id },
+     process.env.JWT_SECRET,
+     { 
+       expiresIn: Math.floor((user.expiration - new Date()) / 1000)
+     }
+   );
 
-    console.log('Generated admin token:', token); // Debug log
+   // ใช้ expiration จากฐานข้อมูล
+   const expiration = user.expiration;
 
-    res.json({
-      code: 200,
-      message: "",
-      data: {
-        token,
-        admin: {
-          id: "admin",
-          username,
-          email: "admin@example.com"
-        }
-      }
-    });
+   // Update last login
+   user.lastLogin = new Date();
+   await user.save();
 
-  } catch (error) {
-    logger.error('Admin auth error:', error);
-    res.status(401).json({
-      code: 401,
-      message: "Authentication failed",
-      data: {}
-    });
-  }
+   logger.info('Program login successful:', {
+     username,
+     role: user.role,
+     team: user.team,
+     hwid: hwid || 'not provided',
+     expiration: expiration
+   });
+
+   res.json({
+     username: user.username,
+     name: user.username,
+     role: user.role,
+     team: user.team,
+     token: token,
+     expiration: expiration,
+     message: 'Login successful'
+   });
+
+ } catch (error) {
+   logger.error('Program login error:', {
+     error: error.message,
+     stack: error.stack 
+   });
+   res.status(500).json({ 
+     message: 'Internal server error',
+     username: '',
+     role: '',
+     team: '',
+     token: '',
+     expiration: null,
+     name: ''
+   });
+ }
 };
