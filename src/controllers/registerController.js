@@ -1,4 +1,4 @@
-//src/controllers/registerController.js
+// src/controllers/registerController.js
 const RegisterHistory = require('../models/RegisterHistory');
 const logger = require('../utils/logger');
 
@@ -45,6 +45,24 @@ exports.recordRegister = async (req, res) => {
                 accessToken: '***',
                 refreshToken: '***'
             }
+        });
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// เพิ่ม getRegisterHistory
+exports.getRegisterHistory = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const history = await RegisterHistory.find({ mid: userId })
+                                          .sort({ registerDate: -1 });
+        
+        logger.info(`Register history retrieved for user: ${userId}`);
+        res.json(history);
+    } catch (error) {
+        logger.error('Get register history error', {
+            error: error.message,
+            userId: req.params.userId
         });
         res.status(500).json({ message: error.message });
     }
