@@ -1,25 +1,26 @@
 const mongoose = require('mongoose');
 
-const createGroupRecordSchema = new mongoose.Schema({
-  Username: String,
-  Created: Date,
-  NameGroup: String,  
-  NumberOfPeople: Number,
-  Status: String
+const historySchema = new mongoose.Schema({
+  username: String,
+  created: {
+    type: Date,
+    default: Date.now
+  },
+  actionType: {
+    type: String,
+    enum: ['สร้างกลุ่ม', 'สมัครไลน์']
+  },
+  nameGroup: String,
+  numberOfPeople: Number,
+  phone: String,
+  displayName: String,
+  status: String
+}, {
+  timestamps: true
 });
 
-const registerRecordSchema = new mongoose.Schema({
-  Username: String,
-  Created: Date,
-  Phone: String,
-  DisplayName: String,
-  Status: String
-});
-
-const DashboardRecord = mongoose.model('CreateGroupRecord', createGroupRecordSchema);
-const RegisterRecord = mongoose.model('RegisterRecord', registerRecordSchema);
+const History = mongoose.model('History', historySchema);
 
 module.exports = {
-  DashboardRecord,
-  RegisterRecord
+  History
 };
