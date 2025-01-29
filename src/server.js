@@ -69,7 +69,7 @@ app.use(`${basePath}/File`, apiLimiter, fileRoutes);
 app.use(`${basePath}/contacts`, apiLimiter, contactRoutes);
 app.use(`${basePath}/friends`, apiLimiter, friendRoutes);
 app.use(`${basePath}/messages`, apiLimiter, messageRoutes);
-app.use(`${basePath}/registers`, apiLimiter, registerRoutes);
+app.use(`${basePath}/HistoryRegister`, apiLimiter, registerRoutes);
 app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
 app.use(`${basePath}/admins`, apiLimiter, adminRoutes);
 
@@ -80,7 +80,7 @@ app.use('/File', apiLimiter, fileRoutes);
 app.use('/contacts', apiLimiter, contactRoutes);
 app.use('/friends', apiLimiter, friendRoutes);
 app.use('/messages', apiLimiter, messageRoutes);
-app.use('/registers', apiLimiter, registerRoutes);
+app.use('/HistoryRegister', apiLimiter, registerRoutes);
 app.use('/stats', apiLimiter, statsRoutes);
 app.use('/admins', apiLimiter, adminRoutes);
 
