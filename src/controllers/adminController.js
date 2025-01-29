@@ -1,29 +1,32 @@
 // src/controllers/adminController.js
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
 exports.authWithPassword = async (req, res) => {
   try {
+    logger.info('Admin login attempt:', {
+      username: req.body.username,
+      path: req.path
+    });
+
     const { username, password } = req.body;
 
     // Validate input
     if (!username || !password) {
-      logger.warn('Admin auth attempt missing credentials');
+      logger.warn('Admin auth - missing credentials');
       return res.status(400).json({
+        status: 'error',
         message: 'Username and password are required'
       });
     }
 
-    // Find admin user
-    const user = await User.findOne({ 
-      username,
-      role: { $in: ['admin', 'superadmin'] }  // Check for admin roles
-    });
-
+    // Find user
+    const user = await User.findOne({ username });
     if (!user) {
-      logger.warn('Admin auth failed - user not found:', { username });
+      logger.warn('Admin auth - user not found:', { username });
       return res.status(401).json({
+        status: 'error', 
         message: 'Authentication failed'
       });
     }
@@ -31,13 +34,14 @@ exports.authWithPassword = async (req, res) => {
     // Verify password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      logger.warn('Admin auth failed - invalid password:', { username });
+      logger.warn('Admin auth - invalid password:', { username });
       return res.status(401).json({
-        message: 'Authentication failed' 
-      });
+        status: 'error',
+        message: 'Authentication failed'
+      }); 
     }
 
-    // Create token that expires when user expires
+    // Create token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
@@ -45,26 +49,28 @@ exports.authWithPassword = async (req, res) => {
     );
 
     logger.info('Admin auth successful:', {
-      username,
-      role: user.role,
-      team: user.team
+      username: user.username,
+      role: user.role
     });
 
     res.json({
-      username: user.username,
-      role: user.role, 
-      team: user.team,
-      token: token,
-      expiration: user.expiration,
-      message: 'Login successful'
+      status: 'success',
+      token,
+      user: {
+        username: user.username,
+        role: user.role,
+        team: user.team,
+        expiration: user.expiration
+      }
     });
 
-  } catch (error) {
+  } catch(error) {
     logger.error('Admin auth error:', {
       error: error.message,
       stack: error.stack
     });
     res.status(500).json({
+      status: 'error',
       message: 'Internal server error'
     });
   }
