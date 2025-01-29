@@ -9,13 +9,8 @@ exports.uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'No files were uploaded' });
     }
 
-    const file = req.files.file; // 'file' is the name of the file field in form data
+    const file = req.files.file;
     const uploadDir = path.join(__dirname, '../uploads');
-
-    // Create uploads directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
 
     // Validate file type (only allow .txt)
     if (path.extname(file.name).toLowerCase() !== '.txt') {
