@@ -19,6 +19,7 @@ const friendRoutes = require('./routes/friendRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const registerRoutes = require('./routes/registerRoutes');
 const statsRoutes = require('./routes/statsRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -70,6 +71,7 @@ app.use(`${basePath}/friends`, apiLimiter, friendRoutes);
 app.use(`${basePath}/messages`, apiLimiter, messageRoutes);
 app.use(`${basePath}/registers`, apiLimiter, registerRoutes);
 app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
+app.use(`${basePath}/admins`, apiLimiter, adminRoutes);
 
 // Also support routes without base path for backward compatibility
 app.use('/auth', authLimiter, authRoutes);
@@ -80,6 +82,7 @@ app.use('/friends', apiLimiter, friendRoutes);
 app.use('/messages', apiLimiter, messageRoutes);
 app.use('/registers', apiLimiter, registerRoutes);
 app.use('/stats', apiLimiter, statsRoutes);
+app.use('/admins', apiLimiter, adminRoutes);
 
 // Static file serving
 app.use('/uploads', express.static('uploads'));
