@@ -3,20 +3,19 @@ const logger = require('../utils/logger');
 
 const auth = async (req, res, next) => {
   try {
-    // ดึง token จาก header
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    console.log('Received token:', token); // Debug log
     
     if (!token) {
       logger.warn('No token provided');
       return res.status(401).json({ 
         code: 401,
-        message: 'Authentication failed', 
+        message: 'No token provided', 
         data: {}
       });
     }
 
     try {
-      // ตรวจสอบ token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.userId = decoded.userId;
       next();
@@ -24,7 +23,7 @@ const auth = async (req, res, next) => {
       logger.error('Token verification failed:', error);
       return res.status(401).json({
         code: 401,
-        message: 'Authentication failed',
+        message: 'Token verification failed',
         data: {}
       });
     }

@@ -1,12 +1,9 @@
-//src/routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
-// เพิ่ม route นี้
-router.post('/login/program', authController.loginProgram);
-
-// routes อื่นๆ
 router.post('/login', authController.login);
+router.post('/login/program', authController.loginProgram);
+router.post('/admin-auth', authController.adminAuth);
 
 module.exports = router;
