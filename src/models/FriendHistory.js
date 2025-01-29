@@ -1,3 +1,4 @@
+//src/models/FriendHistory.js
 const mongoose = require('mongoose');
 
 const friendHistorySchema = new mongoose.Schema({

@@ -1,3 +1,4 @@
+//src/models/SendHistory.js
 const mongoose = require('mongoose');
 
 const sendHistorySchema = new mongoose.Schema({

@@ -1,3 +1,4 @@
+//src/controllers/registerController.js
 const RegisterHistory = require('../models/RegisterHistory');
 const logger = require('../utils/logger');
 

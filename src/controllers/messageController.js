@@ -1,3 +1,4 @@
+//src/controllers/messageController.js
 const SendHistory = require('../models/SendHistory');
 const logger = require('../utils/logger'); // เพิ่มบรรทัดนี้
 

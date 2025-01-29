@@ -1,3 +1,4 @@
+//src/controllers/statsController.js
 const SendHistory = require('../models/SendHistory');
 const FriendHistory = require('../models/FriendHistory');
 const RegisterHistory = require('../models/RegisterHistory');

@@ -1,5 +1,6 @@
+//src/controllers/friendController.js
 const FriendHistory = require('../models/FriendHistory');
-const logger = require('../utils/logger'); // เพิ่มบรรทัดนี้
+const logger = require('../utils/logger'); 
 
 exports.recordFriendAction = async (req, res) => {
   try {

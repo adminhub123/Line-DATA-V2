@@ -1,3 +1,4 @@
+//src/models/RegisterHistory.js
 const mongoose = require('mongoose');
 
 const registerHistorySchema = new mongoose.Schema({

@@ -11,10 +11,11 @@ const logger = require('./utils/logger');
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const fileRoutes = require('./routes/fileRoutes');
-
-const User = require('./models/User');
+const messageRoutes = require('./routes/messageRoutes');
+const friendRoutes = require('./routes/friendRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const registerRoutes = require('./routes/registerRoutes');
+const statsRoutes = require('./routes/statsRoutes');
 
 const app = express();
 
@@ -41,17 +42,20 @@ const basePath = '/api';
 // Routes with base path
 app.use(`${basePath}/auth`, authLimiter, authRoutes);
 app.use(`${basePath}/users`, apiLimiter, userRoutes);
-app.use(`${basePath}/dashboard`, apiLimiter, dashboardRoutes);
-app.use(`${basePath}/files`, apiLimiter, fileRoutes);
+app.use(`${basePath}/messages`, apiLimiter, messageRoutes);
+app.use(`${basePath}/friends`, apiLimiter, friendRoutes);
+app.use(`${basePath}/contacts`, apiLimiter, contactRoutes);
+app.use(`${basePath}/register`, apiLimiter, registerRoutes);
+app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
 
 // Also support routes without base path
 app.use('/auth', authLimiter, authRoutes);
 app.use('/users', apiLimiter, userRoutes);
-app.use('/dashboard', apiLimiter, dashboardRoutes);
-app.use('/files', apiLimiter, fileRoutes);
-
-// Static file serving
-app.use('/uploads', express.static('uploads'));
+app.use('/messages', apiLimiter, messageRoutes);
+app.use('/friends', apiLimiter, friendRoutes);
+app.use('/contacts', apiLimiter, contactRoutes);
+app.use('/register', apiLimiter, registerRoutes);
+app.use('/stats', apiLimiter, statsRoutes);
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -77,7 +81,6 @@ app.use((err, req, res, next) => {
     path: req.path,
     method: req.method
   });
-
   res.status(err.status || 500).json({
     status: 'error',
     message: err.message || 'Internal server error'
@@ -90,7 +93,6 @@ app.use((req, res) => {
     path: req.path,
     method: req.method
   });
-
   res.status(404).json({
     status: 'error',
     message: 'Not Found'
