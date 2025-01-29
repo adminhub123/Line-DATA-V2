@@ -1,17 +1,6 @@
-//src/controllers/authController.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
-
-const validateLoginInput = (username, password) => {  
- if (!username || !password) {
-   return 'Username and password are required';
- }
- if (typeof username !== 'string' || typeof password !== 'string') {
-   return 'Invalid username or password format'; 
- }
- return null;
-};
 
 // Login สำหรับเว็บ
 exports.login = async (req, res) => {
@@ -22,38 +11,16 @@ exports.login = async (req, res) => {
      ip: req.ip
    });
 
-   const username = req.body.username || req.body.userName;
-   const { password } = req.body;
-   
-   const validationError = validateLoginInput(username, password);
-   if (validationError) {
-     logger.warn('Web login validation failed:', {
-       error: validationError,
-       username
-     });
-     return res.status(400).json({
-       message: validationError,
-       username: '',
-       role: '',
-       team: '',
-       token: '',
-       expiration: null,
-       name: ''
-     });
-   }
+   const { username, password } = req.body;
 
-   // Find user with isWebAdmin true
+   // Find user
    const user = await User.findOne({ username, isWebAdmin: true });
    if (!user) {
      logger.warn('Web login failed - user not found:', { username });
-     return res.status(401).json({ 
+     return res.status(401).json({
+       code: 401,
        message: 'Authentication failed: User not found',
-       username: '',
-       role: '',
-       team: '',
-       token: '',
-       expiration: null,
-       name: ''
+       data: {}
      });
    }
 
@@ -61,14 +28,10 @@ exports.login = async (req, res) => {
    const isMatch = await user.comparePassword(password);
    if (!isMatch) {
      logger.warn('Web login failed - invalid password:', { username });
-     return res.status(401).json({ 
+     return res.status(401).json({
+       code: 401,
        message: 'Authentication failed: Invalid password',
-       username: '',
-       role: '',
-       team: '',
-       token: '',
-       expiration: null,
-       name: ''
+       data: {}
      });
    }
 
@@ -76,13 +39,8 @@ exports.login = async (req, res) => {
    const token = jwt.sign(
      { userId: user._id },
      process.env.JWT_SECRET,
-     { 
-       expiresIn: Math.floor((user.expiration - new Date()) / 1000)
-     }
+     { expiresIn: Math.floor((user.expiration - new Date()) / 1000) }
    );
-
-   // ใช้ expiration จากฐานข้อมูล
-   const expiration = user.expiration;
 
    // Update last login
    user.lastLogin = new Date();
@@ -92,17 +50,18 @@ exports.login = async (req, res) => {
      username,
      role: user.role,
      team: user.team,
-     expiration: expiration
+     expiration: user.expiration
    });
 
    res.json({
-     username: user.username,
-     name: user.username,
-     role: user.role,
-     team: user.team,
      token: token,
-     expiration: expiration,
-     message: 'Login successful'
+     user: {
+       id: user._id,
+       username: user.username,
+       role: user.role,
+       team: user.team,
+       expiration: user.expiration
+     }
    });
 
  } catch (error) {
@@ -110,14 +69,10 @@ exports.login = async (req, res) => {
      error: error.message,
      stack: error.stack
    });
-   res.status(500).json({ 
+   res.status(500).json({
+     code: 500,
      message: 'Internal server error',
-     username: '',
-     role: '',
-     team: '',
-     token: '',
-     expiration: null,
-     name: ''
+     data: {}
    });
  }
 };
@@ -125,117 +80,198 @@ exports.login = async (req, res) => {
 // Login สำหรับโปรแกรม
 exports.loginProgram = async (req, res) => {
  try {
-   logger.info('Program login request:', {
-     body: req.body,
-     headers: req.headers,
-     ip: req.ip
-   });
+   const { username, password } = req.body;
+   logger.info('Program login request:', { username });
 
-   const username = req.body.username || req.body.userName;
-   const { password, hwid } = req.body;
-
-   logger.info('Program login fields:', {
-     receivedFields: Object.keys(req.body),
-     username: username,
-     hasPassword: !!password,
-     hwid: hwid || 'not provided',
-     unexpectedFields: Object.keys(req.body).filter(key => 
-       !['username', 'userName', 'password', 'hwid'].includes(key)
-     )
-   });
-
-   const validationError = validateLoginInput(username, password);
-   if (validationError) {
-     logger.warn('Program login validation failed:', {
-       error: validationError,
-       username
-     });
-     return res.status(401).json({
-       message: 'Invalid username, password, or hwid',
-       username: '',
-       role: '',
-       team: '',
-       token: '',
-       expiration: null,
-       name: ''
-     });
-   }
-
+   // Find user
    const user = await User.findOne({ username });
    if (!user) {
      logger.warn('Program login failed - user not found:', { username });
-     return res.status(401).json({ 
-       message: 'Invalid username, password, or hwid',
-       username: '',
-       role: '',
-       team: '',
-       token: '',
-       expiration: null,
-       name: ''
+     return res.status(401).json({
+       code: 401,
+       message: 'Invalid username or password',
+       data: {
+         token: '',
+         user: null
+       }
      });
    }
 
+   // Check password
    const isMatch = await user.comparePassword(password);
    if (!isMatch) {
      logger.warn('Program login failed - invalid password:', { username });
-     return res.status(401).json({ 
-       message: 'Invalid username, password, or hwid',
-       username: '',
-       role: '',
-       team: '',
-       token: '',
-       expiration: null,
-       name: ''
+     return res.status(401).json({
+       code: 401,
+       message: 'Invalid username or password',
+       data: {
+         token: '',
+         user: null
+       }
      });
    }
 
-   // ใช้เวลาที่เหลือจนถึงวันหมดอายุจริง
+   // Generate PocketBase style token
    const token = jwt.sign(
-     { userId: user._id },
+     { 
+       userId: user._id,
+       type: 'authRecord',
+       collectionId: 'users',
+       collectionName: 'users'
+     },
      process.env.JWT_SECRET,
      { 
-       expiresIn: Math.floor((user.expiration - new Date()) / 1000)
+       expiresIn: Math.floor((user.expiration - new Date()) / 1000) 
      }
    );
-
-   // ใช้ expiration จากฐานข้อมูล
-   const expiration = user.expiration;
 
    // Update last login
    user.lastLogin = new Date();
    await user.save();
 
+   // Log success
    logger.info('Program login successful:', {
-     username,
+     username: user.username,
      role: user.role,
      team: user.team,
-     hwid: hwid || 'not provided',
-     expiration: expiration
+     expiration: user.expiration
    });
 
+   // Return PocketBase style response
    res.json({
-     username: user.username,
-     name: user.username,
-     role: user.role,
-     team: user.team,
-     token: token,
-     expiration: expiration,
-     message: 'Login successful'
+     code: 200,
+     message: '',
+     data: {
+       token: token,
+       record: {
+         id: user._id,
+         collectionId: 'users',
+         collectionName: 'users', 
+         username: user.username,
+         verified: true,
+         emailVisibility: true,
+         created: user.createdAt,
+         updated: user.updatedAt,
+         role: user.role,
+         team: user.team,
+         expiration: user.expiration
+       }
+     }
    });
 
  } catch (error) {
    logger.error('Program login error:', {
      error: error.message,
-     stack: error.stack 
+     stack: error.stack
    });
-   res.status(500).json({ 
+   res.status(500).json({
+     code: 500, 
      message: 'Internal server error',
-     username: '',
-     role: '',
-     team: '',
-     token: '',
-     expiration: null,
-     name: ''
+     data: {
+       token: '',
+       user: null
+     }
    });
  }
 };
+
+// Get current user
+exports.getCurrentUser = async (req, res) => {
+ try {
+   const user = await User.findById(req.userId).select('-password');
+   if (!user) {
+     return res.status(404).json({
+       code: 404,
+       message: 'User not found',
+       data: null
+     });
+   }
+
+   res.json({
+     code: 200,
+     message: '',
+     data: {
+       id: user._id,
+       username: user.username,
+       role: user.role,
+       team: user.team,
+       expiration: user.expiration,
+       lastLogin: user.lastLogin
+     }
+   });
+ } catch (error) {
+   logger.error('Get current user error:', error);
+   res.status(500).json({
+     code: 500,
+     message: 'Error getting user data',
+     data: null  
+   });
+ }
+};
+
+// Refresh token
+exports.refreshToken = async (req, res) => {
+ try {
+   const user = await User.findById(req.userId);
+   if (!user) {
+     return res.status(404).json({
+       code: 404,
+       message: 'User not found',
+       data: null
+     });
+   }
+
+   // Generate new token
+   const token = jwt.sign(
+     { userId: user._id },
+     process.env.JWT_SECRET,  
+     { expiresIn: Math.floor((user.expiration - new Date()) / 1000) }
+   );
+
+   res.json({
+     code: 200,
+     message: '',
+     data: {
+       token: token,
+       user: {
+         id: user._id,
+         username: user.username,
+         role: user.role,
+         team: user.team,
+         expiration: user.expiration
+       }
+     }
+   });
+
+ } catch (error) {
+   logger.error('Token refresh error:', error);
+   res.status(500).json({
+     code: 500,
+     message: 'Error refreshing token',
+     data: null
+   });
+ }
+};
+
+// Logout
+exports.logout = async (req, res) => {
+ try {
+   // Clear token cookie if exists
+   res.clearCookie('token');
+   
+   res.json({
+     code: 200,
+     message: 'Logged out successfully',
+     data: null
+   });
+ } catch (error) {
+   logger.error('Logout error:', error);
+   res.status(500).json({
+     code: 500,
+     message: 'Error logging out',
+     data: null
+   }); 
+ }
+};
+
+module.exports = exports;
