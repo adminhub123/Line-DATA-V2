@@ -7,11 +7,13 @@ const upload = multer({ dest: 'uploads/' });
 
 router.use(auth);
 
-// เพิ่ม route นี้
-router.get('/collections/getFileData/records', fileController.getFileDataRecords);
-
+// Upload file
 router.post('/upload', upload.single('file'), fileController.uploadFile);
+
+// Get all files
 router.get('/', fileController.getFiles);
+
+// Update download count
 router.put('/:id/download', fileController.updateFileDownloadCount);
 
 module.exports = router;

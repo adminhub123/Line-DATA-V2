@@ -77,35 +77,3 @@ exports.updateFileDownloadCount = async (req, res) => {
     res.status(500).json({ message: 'Error updating download count' });
   }
 };
-
-// เพิ่มตรงนี้
-exports.getFileDataRecords = async (req, res) => {
-  try {
-    const files = await FileData.find().sort({ Created: -1 });
-    // แปลงข้อมูลให้ตรงกับที่โปรแกรมต้องการ
-    const records = files.map(file => ({
-      id: file._id,
-      created: file.Created,
-      updated: file.updatedAt,
-      NameFile: file.NameFile,
-      UrlDownload: file.UrlDownload,
-      CountDownload: file.CountDownload,
-      UpdatedBy: file.UpdatedBy
-    }));
-
-    res.json({
-      page: 1,
-      perPage: records.length,
-      totalItems: records.length,
-      totalPages: 1,
-      items: records
-    });
-
-  } catch (error) {
-    logger.error('Get file records error:', {
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({ message: 'Error getting file records' });
-  }
-};

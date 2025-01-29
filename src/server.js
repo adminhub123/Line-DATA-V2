@@ -42,7 +42,7 @@ const basePath = '/api';
 app.use(`${basePath}/auth`, authLimiter, authRoutes);
 app.use(`${basePath}/users`, apiLimiter, userRoutes);
 app.use(`${basePath}/dashboard`, apiLimiter, dashboardRoutes);
-app.use(`${basePath}`, apiLimiter, fileRoutes);
+app.use(`${basePath}/files`, apiLimiter, fileRoutes);
 
 // Also support routes without base path
 app.use('/auth', authLimiter, authRoutes);
