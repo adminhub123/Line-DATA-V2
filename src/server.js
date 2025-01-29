@@ -64,7 +64,7 @@ const basePath = '/api';
 // Routes with base path
 app.use(`${basePath}/auth`, authLimiter, authRoutes);
 app.use(`${basePath}/users`, apiLimiter, userRoutes);
-app.use(`${basePath}/files`, apiLimiter, fileRoutes);
+app.use(`${basePath}/File`, apiLimiter, fileRoutes);
 app.use(`${basePath}/contacts`, apiLimiter, contactRoutes);
 app.use(`${basePath}/friends`, apiLimiter, friendRoutes);
 app.use(`${basePath}/messages`, apiLimiter, messageRoutes);
@@ -74,7 +74,7 @@ app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
 // Also support routes without base path for backward compatibility
 app.use('/auth', authLimiter, authRoutes);
 app.use('/users', apiLimiter, userRoutes);
-app.use('/files', apiLimiter, fileRoutes);
+app.use('/File', apiLimiter, fileRoutes);
 app.use('/contacts', apiLimiter, contactRoutes);
 app.use('/friends', apiLimiter, friendRoutes);
 app.use('/messages', apiLimiter, messageRoutes);
