@@ -80,6 +80,8 @@ app.use(`${basePath}/HistoryRegister`, apiLimiter, registerRoutes);
 app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
 app.use(`${basePath}/admins`, apiLimiter, adminRoutes);
 app.use(`${basePath}/CreateGroup`, apiLimiter, groupRoutes);
+app.use(`${basePath}/group`, apiLimiter, groupRoutes);  // Path เป็น /api/group
+app.use(`${basePath}/collections/CreateGroupConfig/records`, apiLimiter, groupRoutes);
 
 // Also support routes without base path for backward compatibility
 app.use('/auth', authLimiter, authRoutes);
@@ -92,6 +94,7 @@ app.use('/HistoryRegister', apiLimiter, registerRoutes);
 app.use('/stats', apiLimiter, statsRoutes);
 app.use('/admins', apiLimiter, adminRoutes);
 app.use('/CreateGroup', apiLimiter, groupRoutes);
+app.use('/collections/CreateGroupConfig/records', apiLimiter, groupRoutes);
 
 // Static file serving
 app.use('/uploads', express.static('uploads'));
