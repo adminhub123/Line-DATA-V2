@@ -2,28 +2,33 @@
 const logger = require('../utils/logger');
 
 exports.getGroups = async (req, res) => {
-   try {
-       // Log request
-       logger.info('Get groups request:', {
-           headers: req.headers,
-           query: req.query
-       });
+    try {
+        logger.info('Get groups request:', {
+            headers: req.headers,
+            query: req.query
+        });
 
-       // TODO: Implement get groups logic
-       res.json({
-           message: 'Get groups successfully',
-           data: [] // ส่งข้อมูลกลุ่มกลับไป
-       });
+        // สร้าง response ที่เป็น array ว่าง
+        const groups = [];
 
-   } catch (error) {
-       logger.error('Get groups error:', {
-           error: {
-               message: error.message,
-               stack: error.stack
-           }
-       });
-       res.status(500).json({ message: error.message });
-   }
+        // Log response
+        logger.info('Get groups response:', {
+            count: groups.length,
+            groups
+        });
+
+        // ส่งกลับเป็น array เปล่า
+        res.json(groups); // ส่งแค่ array ไม่ต้องมี wrapper object
+
+    } catch (error) {
+        logger.error('Get groups error:', {
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+        res.status(500).json({ message: error.message });
+    }
 };
 
 exports.createGroup = async (req, res) => {
