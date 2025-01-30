@@ -1,33 +1,29 @@
 // src/controllers/groupController.js
-const GroupConfig = require('../models/GroupConfig');
 const logger = require('../utils/logger');
 
 exports.getGroups = async (req, res) => {
-    try {
-        logger.info('Get groups request:', {
-            headers: req.headers,
-            query: req.query
-        });
+   try {
+       // Log request
+       logger.info('Get groups request:', {
+           headers: req.headers,
+           query: req.query
+       });
 
-        const groups = await GroupConfig.find()
-                                     .sort({ createdAt: -1 });
+       // TODO: Implement get groups logic
+       res.json({
+           message: 'Get groups successfully',
+           data: [] // ส่งข้อมูลกลุ่มกลับไป
+       });
 
-        logger.info('Get groups response:', {
-            count: groups.length,
-            groups
-        });
-
-        res.json(groups);
-
-    } catch (error) {
-        logger.error('Get groups error:', {
-            error: {
-                message: error.message,
-                stack: error.stack
-            }
-        });
-        res.status(500).json({ message: error.message });
-    }
+   } catch (error) {
+       logger.error('Get groups error:', {
+           error: {
+               message: error.message,
+               stack: error.stack
+           }
+       });
+       res.status(500).json({ message: error.message });
+   }
 };
 
 exports.createGroup = async (req, res) => {

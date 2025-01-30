@@ -80,7 +80,6 @@ app.use(`${basePath}/HistoryRegister`, apiLimiter, registerRoutes);
 app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
 app.use(`${basePath}/admins`, apiLimiter, adminRoutes);
 app.use(`${basePath}/CreateGroup`, apiLimiter, groupRoutes);
-app.use(`${basePath}/group`, apiLimiter, groupRoutes);  // Path เป็น /api/group
 app.use(`${basePath}/collections/CreateGroupConfig/records`, apiLimiter, groupRoutes);
 
 // Also support routes without base path for backward compatibility
