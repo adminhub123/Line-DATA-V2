@@ -1,69 +1,89 @@
-// src/controllers/registerController.js
-const RegisterHistory = require('../models/RegisterHistory');
+const RegisterHistory = require('../models/RegisterHistory'); 
 const logger = require('../utils/logger');
 
 exports.recordRegister = async (req, res) => {
-    try {
-        const {
-            mid,
-            nameLinee, 
-            deviceId,
-            authKey,
-            phoneNumber,
-            fileNumber,
-            accessToken,
-            refreshToken
-        } = req.body;
+   try {
+       logger.info('Register request received:', {
+           body: req.body,
+           headers: req.headers,
+           path: req.path
+       });
 
-        const registerRecord = new RegisterHistory({
-            mid,
-            displayName: nameLinee,
-            deviceId,
-            authKey, 
-            phoneNumber,
-            fileNumber,
-            accessToken,
-            refreshToken,
-            registerDate: new Date()
-        });
+       const {
+           Mid,
+           DisplayName, 
+           AuthKey,
+           Phone,
+           AccessToken,
+           RefreshToken,
+           Status,
+           BrandId,
+           CreatedAt,
+           UpdatedAt
+       } = req.body;
 
-        await registerRecord.save();
+       const registerRecord = new RegisterHistory({
+           mid: Mid,
+           displayName: DisplayName,
+           authKey: AuthKey, 
+           phoneNumber: Phone,
+           accessToken: AccessToken,
+           refreshToken: RefreshToken,
+           status: Status,
+           brandId: BrandId,
+           createdAt: CreatedAt,
+           updatedAt: UpdatedAt,
+           registerDate: new Date()
+       });
 
-        logger.info(`Registration recorded for user: ${mid}`, {
-            displayName: nameLinee,
-            deviceId,
-            phoneNumber 
-        });
+       await registerRecord.save();
 
-        res.status(201).json(registerRecord);
+       logger.info(`Registration recorded successfully for user: ${Mid}`, {
+           displayName: DisplayName,
+           phoneNumber: Phone
+       });
 
-    } catch (error) {
-        logger.error('Record registration error', {
-            error: error.message,
-            data: {
-                ...req.body,
-                accessToken: '***',
-                refreshToken: '***'
-            }
-        });
-        res.status(500).json({ message: error.message });
-    }
+       res.status(201).json(registerRecord);
+
+   } catch (error) {
+       logger.error('Register record error:', {
+           error: {
+               message: error.message,
+               stack: error.stack,
+               name: error.name
+           },
+           body: {
+               ...req.body,
+               accessToken: '***',
+               refreshToken: '***'
+           }
+       });
+
+       res.status(500).json({
+           message: error.message,
+           errorType: error.name
+       });
+   }
 };
 
-// เพิ่ม getRegisterHistory
 exports.getRegisterHistory = async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const history = await RegisterHistory.find({ mid: userId })
-                                          .sort({ registerDate: -1 });
-        
-        logger.info(`Register history retrieved for user: ${userId}`);
-        res.json(history);
-    } catch (error) {
-        logger.error('Get register history error', {
-            error: error.message,
-            userId: req.params.userId
-        });
-        res.status(500).json({ message: error.message });
-    }
+   try {
+       const { userId } = req.params;
+       const history = await RegisterHistory.find({ mid: userId })
+                                         .sort({ registerDate: -1 });
+       
+       logger.info(`Register history retrieved for user: ${userId}`);
+       res.json(history);
+
+   } catch (error) {
+       logger.error('Get register history error:', {
+           error: {
+               message: error.message,
+               stack: error.stack
+           },
+           userId: req.params.userId  
+       });
+
+       res.status(500).json({ message: error.message });
+   }
 };

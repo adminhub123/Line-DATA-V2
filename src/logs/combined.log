@@ -1,15 +1,3 @@
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:10:04.960Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:10:10.371Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:10:21.515Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:10:23.424Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:10:28.846Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:13:02.643Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:13:08.113Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T16:14:19.628Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T16:14:25.105Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T17:18:53.753Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T17:18:59.268Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T17:29:46.764Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T17:29:52.237Z"}
-{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-29T18:05:08.123Z"}
-{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-29T18:05:13.590Z"}
+{"body":{"password":"admin123","userName":"admin"},"headers":{"content-length":"42","content-type":"application/json; charset=utf-8","host":"localhost:3000"},"ip":"127.0.0.1","level":"info","message":"Program login request:","timestamp":"2025-01-30T00:56:33.286Z"}
+{"hasPassword":true,"hwid":"not provided","level":"info","message":"Program login fields:","receivedFields":["userName","password"],"timestamp":"2025-01-30T00:56:33.286Z","unexpectedFields":[],"username":"admin"}
+{"expiration":"2029-10-30T17:00:00.000Z","hwid":"not provided","level":"info","message":"Program login successful:","role":"superadmin","team":"admin","timestamp":"2025-01-30T00:56:33.428Z","username":"admin"}
