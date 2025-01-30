@@ -23,6 +23,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const fileDataRoutes = require('./routes/fileDataRoutes');
 const collectionRoutes = require('./routes/collectionRoutes');
+const collRoutes = require('./routes/collRoutes');
 
 const app = express();
 
@@ -68,6 +69,7 @@ const basePath = '/api';
 // Add to routes
 app.use('/api', fileDataRoutes);
 app.use('/api', collectionRoutes);
+app.use('/api', collRoutes);
 
 // Routes with base path
 app.use(`${basePath}/auth`, authLimiter, authRoutes);
@@ -80,7 +82,6 @@ app.use(`${basePath}/HistoryRegister`, apiLimiter, registerRoutes);
 app.use(`${basePath}/stats`, apiLimiter, statsRoutes);
 app.use(`${basePath}/admins`, apiLimiter, adminRoutes);
 app.use(`${basePath}/CreateGroup`, apiLimiter, groupRoutes);
-app.use(`${basePath}/collections/CreateGroupConfig/records`, apiLimiter, groupRoutes);
 
 // Also support routes without base path for backward compatibility
 app.use('/auth', authLimiter, authRoutes);
@@ -93,7 +94,7 @@ app.use('/HistoryRegister', apiLimiter, registerRoutes);
 app.use('/stats', apiLimiter, statsRoutes);
 app.use('/admins', apiLimiter, adminRoutes);
 app.use('/CreateGroup', apiLimiter, groupRoutes);
-app.use('/collections/CreateGroupConfig/records', apiLimiter, groupRoutes);
+app.use('/', collRoutes);
 
 // Static file serving
 app.use('/uploads', express.static('uploads'));

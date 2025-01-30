@@ -6,3 +6,28 @@
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T13:43:51.653Z"}
 {"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T13:45:33.301Z"}
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T13:45:38.822Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:15:21.770Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:15:27.256Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:21:06.328Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:21:11.816Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:28:38.744Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:28:44.267Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:28:46.754Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:28:52.178Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:29:14.186Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:29:17.566Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:29:22.991Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:29:45.516Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:29:51.000Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:31:03.476Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:31:08.932Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-01-30T16:31:51.969Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-01-30T16:31:57.658Z"}
+{"authHeader":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Nzk4ZDg1NTQ4MTk4MjlhNGVjZGY3ZGEiLCJpYXQiOjE3MzgyNDQ5NzIsImV4cCI6MTg4ODA3Mzk5OX0.VBBuSfOmgB6r1pr1nyb7uqgp8iFXvXNyf4oOXO_OcOE","level":"info","message":"Auth check:","method":"GET","path":"/collections/CreateGroupConfig/records","timestamp":"2025-01-30T16:32:43.626Z"}
+{"level":"info","message":"Auth successful:","path":"/collections/CreateGroupConfig/records","timestamp":"2025-01-30T16:32:43.630Z","userId":"6798d8554819829a4ecdf7da"}
+{"headers":{"accept":"*/*","accept-encoding":"gzip, deflate, br","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Nzk4ZDg1NTQ4MTk4MjlhNGVjZGY3ZGEiLCJpYXQiOjE3MzgyNDQ5NzIsImV4cCI6MTg4ODA3Mzk5OX0.VBBuSfOmgB6r1pr1nyb7uqgp8iFXvXNyf4oOXO_OcOE","connection":"keep-alive","host":"localhost:3000","postman-token":"6ece6d5e-4f8d-4ee8-babb-8e1dd00da772","user-agent":"PostmanRuntime/7.43.0"},"level":"info","message":"Get CreateGroupConfig records request:","query":{},"timestamp":"2025-01-30T16:32:43.630Z"}
+{"items":[],"level":"info","message":"Get CreateGroupConfig records response:","timestamp":"2025-01-30T16:32:43.630Z","totalItems":0}
+{"authHeader":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Nzk4ZDg1NTQ4MTk4MjlhNGVjZGY3ZGEiLCJpYXQiOjE3MzgyNDQ5NzIsImV4cCI6MTg4ODA3Mzk5OX0.VBBuSfOmgB6r1pr1nyb7uqgp8iFXvXNyf4oOXO_OcOE","level":"info","message":"Auth check:","method":"POST","path":"/collections/CreateGroupConfig/records","timestamp":"2025-01-30T16:33:04.764Z"}
+{"level":"info","message":"Auth successful:","path":"/collections/CreateGroupConfig/records","timestamp":"2025-01-30T16:33:04.764Z","userId":"6798d8554819829a4ecdf7da"}
+{"body":{"chatUid":"test123","linkGroup":0,"listKai":["kai1","kai2"],"nameGroup":"Test Group","numberOfPeople":10,"status":"active"},"headers":{"accept":"*/*","accept-encoding":"gzip, deflate, br","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Nzk4ZDg1NTQ4MTk4MjlhNGVjZGY3ZGEiLCJpYXQiOjE3MzgyNDQ5NzIsImV4cCI6MTg4ODA3Mzk5OX0.VBBuSfOmgB6r1pr1nyb7uqgp8iFXvXNyf4oOXO_OcOE","connection":"keep-alive","content-length":"157","content-type":"application/json","host":"localhost:3000","postman-token":"21425332-dec2-4477-baba-acf9c5fd18ce","user-agent":"PostmanRuntime/7.43.0"},"level":"info","message":"Create CreateGroupConfig record request:","timestamp":"2025-01-30T16:33:04.765Z"}
+{"level":"info","message":"Created CreateGroupConfig record:","record":{"chatUid":"test123","created":"2025-01-30T16:33:04.765Z","id":"1738254784765","linkGroup":0,"listKai":["kai1","kai2"],"nameGroup":"Test Group","numberOfPeople":10,"status":"active","updated":"2025-01-30T16:33:04.765Z"},"timestamp":"2025-01-30T16:33:04.765Z"}
