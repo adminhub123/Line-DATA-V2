@@ -24,6 +24,7 @@ const groupRoutes = require('./routes/groupRoutes');
 const fileDataRoutes = require('./routes/fileDataRoutes');
 const collectionRoutes = require('./routes/collectionRoutes');
 const collRoutes = require('./routes/collRoutes');
+const machineKeyRoutes = require('./routes/machineKeyRoutes');
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use('/api', collectionRoutes);
 app.use('/api', collRoutes);
 
 // Routes with base path
+app.use(`${basePath}`, machineKeyRoutes);
 app.use(`${basePath}/auth`, authLimiter, authRoutes);
 app.use(`${basePath}/users`, apiLimiter, userRoutes);
 app.use(`${basePath}/File`, apiLimiter, fileRoutes);

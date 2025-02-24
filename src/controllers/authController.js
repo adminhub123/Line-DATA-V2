@@ -96,14 +96,19 @@ exports.login = async (req, res) => {
    });
 
    res.json({
-     username: user.username,
-     name: user.username,
-     role: user.role,
-     team: user.team,
-     token: token,
-     expiration: expiration,
-     message: 'Login successful'
-   });
+    username: user.username,
+    name: user.username,
+    role: user.role,
+    team: user.team,
+    token: token,
+    expiration: expiration,
+    message: 'Login successful',
+    // เพิ่มฟิลด์เหล่านี้
+    key: "ค่าที่รับมาจาก MachineKey หรือค่าว่าง",
+    keyStatus: 1, // หรือค่าที่เหมาะสมตาม enum MachineKeyStatus
+    keyMessage: "",
+    isFirstLogin: false // หรือ true ตามความเหมาะสม
+  });
 
  } catch (error) {
    logger.error('Web login error:', {
@@ -214,14 +219,19 @@ exports.loginProgram = async (req, res) => {
    });
 
    res.json({
-     username: user.username,
-     name: user.username,
-     role: user.role,
-     team: user.team,
-     token: token,
-     expiration: expiration,
-     message: 'Login successful'
-   });
+    username: user.username,
+    name: user.username,
+    role: user.role,
+    team: user.team,
+    token: token,
+    expiration: expiration,
+    message: 'Login successful',
+    // เพิ่มฟิลด์เหล่านี้
+    key: "ค่าที่รับมาจาก MachineKey หรือค่าว่าง",
+    keyStatus: 1, // หรือค่าที่เหมาะสมตาม enum MachineKeyStatus
+    keyMessage: "",
+    isFirstLogin: false // หรือ true ตามความเหมาะสม
+  });
 
  } catch (error) {
    logger.error('Program login error:', {
