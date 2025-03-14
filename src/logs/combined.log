@@ -56,3 +56,9 @@
 {"level":"info","message":"Auth successful:","path":"/","timestamp":"2025-03-14T11:20:16.315Z","userId":"6798d8554819829a4ecdf7da"}
 {"authHeader":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Nzk4ZDg1NTQ4MTk4MjlhNGVjZGY3ZGEiLCJpYXQiOjE3MzgwOTE4MjEsImV4cCI6MTgyNDQ3MDEwMX0.JZm8JoiUSeQ8v65LG8_MNRMU1XU5wIiaOiiVQHA6NvY","level":"info","message":"Auth check:","method":"GET","path":"/","timestamp":"2025-03-14T11:20:16.359Z"}
 {"level":"info","message":"Auth successful:","path":"/","timestamp":"2025-03-14T11:20:16.363Z","userId":"6798d8554819829a4ecdf7da"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-14T13:26:00.228Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-03-14T13:26:00.756Z"}
+{"level":"info","message":"Auth check:","method":"GET","path":"/","timestamp":"2025-03-14T13:26:50.855Z"}
+{"level":"warn","message":"Invalid auth header format","path":"/","timestamp":"2025-03-14T13:26:50.855Z"}
+{"level":"info","message":"Auth check:","method":"GET","path":"/","timestamp":"2025-03-14T13:26:55.915Z"}
+{"level":"warn","message":"Invalid auth header format","path":"/","timestamp":"2025-03-14T13:26:55.917Z"}
